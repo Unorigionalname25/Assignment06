@@ -1,11 +1,15 @@
 .data               # start of data section
 # put any global or static variables here
-A: .quad 10
+A: .quad 0
 B: .quad 6
 
 .section .rodata    # start of read-only data section
 # constants here, such as strings
 # modifying these during runtime causes a segmentation fault, so be cautious!
+userinputstring1: .string "please input a variable for A\n"
+userinputstring2: .string "please input a variable for B\n"
+scanstring: .string "%d"
+
 printString3: .string "(A - B) + (A * B) = %d\n" 
 printString2: .string "(A*5) = %d\n"
 printString: .string "(A + B) - (A / B) = %d\n"
@@ -106,7 +110,27 @@ pushq %rbp
 movq %rsp, %rbp
 
 # === main() code here ===
+#getting user input
+movq $userinputstring1, %rdi
+xor %rax, %rax
+call printf
 
+movq $scanstring, %rdi
+movq $A, %rsi
+xor %rax, %rax
+call scanf
+
+movq $userinputstring2, %rdi
+xor %rax, %rax
+call printf
+
+movq $scanstring, %rdi
+movq $B, %rsi
+xor %rax, %rax
+call scanf
+
+
+#start of the funtions
 call simple_mult
 
 movq $printString2, %rdi
@@ -131,3 +155,5 @@ call printf
 movq $0, %rax       # place return value in rax
 leave               # undo preamble, clean up the stack
 ret                 # return
+
+
