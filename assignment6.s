@@ -1,7 +1,7 @@
 .data               # start of data section
 # put any global or static variables here
 A: .quad 0
-B: .quad 6
+B: .quad 0
 
 .section .rodata    # start of read-only data section
 # constants here, such as strings
@@ -21,7 +21,8 @@ printString: .string "(A + B) - (A / B) = %d\n"
 .global main        # required, tells gcc where to begin execution
 
 # === functions here ===
-simple_mult:
+# problem_one caculates (A*5), problem_two caculates (A + B) - (A / B), Problem_three caculates (A - B) + (A * B)
+problem_one:
     # A stored in %rdi
     # 5 stored in %rsi
     # return value in %rax
@@ -51,29 +52,39 @@ problem_two:
     #callee saving
     push %rdi
     push %rsi
+    push %rdx
+    push %rcx
+    push %r8
 
     #function code
-    movq A, %rdi
+    movq A, %rdi     
     movq B, %rsi
-    movq %rdi, %rdx
+    movq %rdi, %rdx  
+
     #add (A+B) and store the value in %r8 for later
     add %rsi, %rdx
     movq %rdx, %r8
     #(A+B) stored in %rdx
 
+    #divide (A/B) and stors the result in %rax
     movq %rdi, %rax
     movq %rsi, %rcx
     cqo
     idivq %rcx
 
+    #subtracts (A+B)-(A/B) and stores the result in %r8 then moves it to %rax 
     sub %rax, %r8
     movq %r8, %rax
 
     #callee saving
     pop %rsi
     pop %rdi
+    pop %rdx
+    pop %rcx
+    pop %r8
 
     ret
+
 Problem_three:
     # A stored in %rdi
     # B stored in %rsi
@@ -82,6 +93,8 @@ Problem_three:
     #callee saving
     push %rdi
     push %rsi
+    push %rdx
+
 
     #function code
     movq A, %rdi
@@ -99,6 +112,7 @@ Problem_three:
     #callee saving
     pop %rsi
     pop %rdi
+    pop %rdx
 
     ret
 
@@ -131,7 +145,8 @@ call scanf
 
 
 #start of the funtions
-call simple_mult
+
+call problem_one
 
 movq $printString2, %rdi
 movq %rax, %rsi
@@ -155,5 +170,3 @@ call printf
 movq $0, %rax       # place return value in rax
 leave               # undo preamble, clean up the stack
 ret                 # return
-
-
